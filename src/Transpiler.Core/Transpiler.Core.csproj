@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Transpiler.Core</RootNamespace>
+    <AssemblyName>Transpiler.Core</AssemblyName>
+    <Description>Domain model for the CLX/CL transpiler: syntax tree, diagnostics, language profiles, settings — data and contracts only, no behavior.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- TranspilerSettings.Verbosity is a Microsoft.Extensions.Logging LogLevel. -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <!-- Project-scoped global usings: every Core namespace is visible everywhere in
+       Core without per-file using churn. -->
+  <ItemGroup>
+    <Using Include="Transpiler.Core.Abstractions" />
+    <Using Include="Transpiler.Core.Text" />
+    <Using Include="Transpiler.Core.Syntax" />
+    <Using Include="Transpiler.Core.Diagnostics" />
+    <Using Include="Transpiler.Core.Languages" />
+    <Using Include="Transpiler.Core.Configuration" />
+    <Using Include="Transpiler.Core.Semantics" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The test project may exercise internal members directly. -->
+    <InternalsVisibleTo Include="Transpiler.Core.Tests" />
+  </ItemGroup>
+
+</Project>
