@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 2,
+  "kind": "language",
+  "isEnabled": false,
+  "name": "VBALIKE",
+  "displayName": "VBA-like module language (recipe example)",
+  "caseSensitive": false,
+  "comment": {
+    "line": "'"
+  },
+  "blocks": {
+    "style": "Keyword"
+  },
+  "breakpoint": "",
+  "recipe": {
+    "namespace": {
+      "format": "Module {name}",
+      "endFormat": "End Module",
+      "endEmit": "End Module",
+      "mustContain": [
+        "variabledeclaration",
+        "subroutine"
+      ]
+    },
+    "variabledeclaration": {},
+    "subroutine": {
+      "start": "Sub",
+      "end": "End Sub",
+      "endEmit": "End Sub"
+    }
+  },
+  "variables": {
+    "scopes": {
+      "external": {
+        "keyword": "Global"
+      },
+      "local": {
+        "keyword": "Dim"
+      }
+    },
+    "kinds": {
+      "numeric": {
+        "spelling": "Number"
+      },
+      "boolean": {
+        "spelling": "Boolean"
+      }
+    }
+  },
+  "keywords": {
+    "if": "If",
+    "then": "Then",
+    "else": "Else",
+    "elseIf": "ElseIf",
+    "endIf": "End If",
+    "while": "While",
+    "endWhile": "Wend",
+    "goto": "GoTo",
+    "call": "Call",
+    "return": "Return",
+    "boolTrue": "True",
+    "boolFalse": "False",
+    "and": "And",
+    "or": "Or",
+    "not": "Not"
+  },
+  "labels": {
+    "suffix": ":",
+    "generatedPrefix": "__CLX_"
+  },
+  "capabilities": {
+    "blockIf": true,
+    "complexConditions": true,
+    "arithmetic": true,
+    "returnInMain": "endScan",
+    "requiresThen": true,
+    "requiresDo": false,
+    "setReset": false
+  }
+}

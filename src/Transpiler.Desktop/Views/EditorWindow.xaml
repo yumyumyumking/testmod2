@@ -1,0 +1,168 @@
+<Window x:Class="Transpiler.Desktop.Views.EditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Transpiler.Desktop.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:EditorViewModel, IsDesignTimeCreatable=False}"
+        Title="CLX Live Editor"
+        Width="1100"
+        Height="720"
+        MinWidth="800"
+        MinHeight="500"
+        WindowStartupLocation="CenterOwner">
+
+  <Window.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+  </Window.Resources>
+
+  <DockPanel Margin="10">
+
+    <!-- Toolbar -->
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+      <ComboBox Width="120"
+                Margin="0,0,6,0"
+                VerticalContentAlignment="Center"
+                ItemsSource="{Binding SourceLanguages}"
+                SelectedItem="{Binding SourceLanguage}"
+                ToolTip="Source language — the language being edited on the left" />
+      <ComboBox Width="120"
+                Margin="0,0,8,0"
+                VerticalContentAlignment="Center"
+                ItemsSource="{Binding TargetLanguages}"
+                SelectedItem="{Binding TargetLanguage}"
+                ToolTip="Target language — the live preview on the right; revalidated when the source changes" />
+      <Button Padding="12,5" Margin="0,0,8,0" Content="Open…" Command="{Binding OpenCommand}" />
+      <Button Padding="12,5" Margin="0,0,8,0" Content="Save source…" Command="{Binding SaveClxCommand}" />
+      <Button Padding="12,5" Margin="0,0,8,0" Content="Save output…" Command="{Binding SaveClCommand}" />
+      <Button Padding="12,5" Margin="0,0,8,0" Content="Reload languages" Command="{Binding ReloadLanguagesCommand}" />
+      <TextBlock VerticalAlignment="Center"
+                 Margin="12,0,0,0"
+                 FontStyle="Italic"
+                 Foreground="#FFB86A00"
+                 Text="preview shows last good translation"
+                 Visibility="{Binding PreviewStale, Converter={StaticResource BoolToVisibility}}" />
+    </StackPanel>
+
+    <!-- Status bar -->
+    <Border DockPanel.Dock="Bottom" Padding="6,4" Background="#FFEFEFEF" Margin="0,8,0,0">
+      <TextBlock Text="{Binding StatusText}" />
+    </Border>
+
+    <!-- Problems list -->
+    <Grid DockPanel.Dock="Bottom" Height="140" Margin="0,8,0,0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <TextBlock Grid.Row="0" FontWeight="SemiBold" Margin="0,0,0,4" Text="Problems" />
+      <ListView x:Name="ProblemsList"
+                Grid.Row="1"
+                ItemsSource="{Binding Problems}"
+                MouseDoubleClick="OnProblemActivated"
+                FontSize="12">
+        <ListView.View>
+          <GridView>
+            <GridViewColumn Header="Severity" Width="80" DisplayMemberBinding="{Binding Severity}" />
+            <GridViewColumn Header="Code" Width="80" DisplayMemberBinding="{Binding Code}" />
+            <GridViewColumn Header="Line" Width="70" DisplayMemberBinding="{Binding Location}" />
+            <GridViewColumn Header="Message" Width="700" DisplayMemberBinding="{Binding Message}" />
+          </GridView>
+        </ListView.View>
+        <ListView.ItemContainerStyle>
+          <Style TargetType="ListViewItem">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Severity}" Value="Error">
+                <Setter Property="Foreground" Value="#FFCC2222" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding Severity}" Value="Warning">
+                <Setter Property="Foreground" Value="#FFB86A00" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ListView.ItemContainerStyle>
+      </ListView>
+    </Grid>
+
+    <!-- Editor / preview panes -->
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Grid Grid.Column="0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" FontWeight="SemiBold" Margin="0,0,0,4" Text="{Binding SourceHeader}" />
+        <Grid Grid.Row="1">
+          <TextBox x:Name="SourceBox"
+                   AcceptsReturn="True"
+                   AcceptsTab="True"
+                   FontFamily="Consolas"
+                   FontSize="13"
+                   HorizontalScrollBarVisibility="Auto"
+                   VerticalScrollBarVisibility="Auto"
+                   Text="{Binding SourceText, UpdateSourceTrigger=PropertyChanged}" />
+          <!-- Squiggle overlay: drawn by code-behind from diagnostic spans. -->
+          <Canvas x:Name="SquiggleCanvas"
+                  IsHitTestVisible="False"
+                  ClipToBounds="True" />
+          <!-- Tab-completion popup. -->
+          <Popup x:Name="CompletionPopup"
+                 PlacementTarget="{Binding ElementName=SourceBox}"
+                 Placement="RelativePoint"
+                 StaysOpen="True"
+                 AllowsTransparency="True">
+            <Border Background="White" BorderBrush="#FF888888" BorderThickness="1">
+              <!-- Focusable=False (list + items): a click must not steal keyboard
+                   focus from the editor, or LostKeyboardFocus closes the popup
+                   before the click can accept the completion. -->
+              <ListBox x:Name="CompletionList"
+                       MaxHeight="160"
+                       MinWidth="140"
+                       FontFamily="Consolas"
+                       FontSize="13"
+                       Focusable="False"
+                       MouseLeftButtonUp="OnCompletionClicked">
+                <ListBox.ItemContainerStyle>
+                  <Style TargetType="ListBoxItem">
+                    <Setter Property="Focusable" Value="False" />
+                  </Style>
+                </ListBox.ItemContainerStyle>
+              </ListBox>
+            </Border>
+          </Popup>
+        </Grid>
+      </Grid>
+
+      <GridSplitter Grid.Column="1"
+                    Width="6"
+                    HorizontalAlignment="Stretch"
+                    Background="Transparent"
+                    ShowsPreview="True" />
+
+      <Grid Grid.Column="2">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" FontWeight="SemiBold" Margin="0,0,0,4" Text="{Binding TargetHeader}" />
+        <TextBox Grid.Row="1"
+                 IsReadOnly="True"
+                 IsReadOnlyCaretVisible="True"
+                 FontFamily="Consolas"
+                 FontSize="13"
+                 Background="#FF1E1E1E"
+                 Foreground="#FFDCDCDC"
+                 HorizontalScrollBarVisibility="Auto"
+                 VerticalScrollBarVisibility="Auto"
+                 Text="{Binding PreviewText, Mode=OneWay}" />
+      </Grid>
+    </Grid>
+  </DockPanel>
+</Window>

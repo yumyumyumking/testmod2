@@ -1,0 +1,171 @@
+<Window x:Class="Transpiler.Desktop.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Transpiler.Desktop.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}"
+        Title="CLX Transpiler"
+        Width="920"
+        Height="640"
+        MinWidth="700"
+        MinHeight="480"
+        WindowStartupLocation="CenterScreen">
+
+  <Window.Resources>
+    <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+  </Window.Resources>
+
+  <Grid Margin="12">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="200" MinHeight="100" />
+    </Grid.RowDefinitions>
+
+    <!-- Upper area: file list on the left, action buttons on the right -->
+    <Grid Grid.Row="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <!-- File list -->
+      <Grid Grid.Column="0" Margin="0,0,12,0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Margin="0,0,0,6"
+                   FontWeight="SemiBold"
+                   Text="Selected files" />
+
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Files}"
+                 SelectedItem="{Binding SelectedFile}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 SelectionMode="Single">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding}" ToolTip="{Binding}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Grid>
+
+      <!-- Actions -->
+      <StackPanel Grid.Column="1" Width="150">
+        <TextBlock Margin="0,0,0,10"
+                   HorizontalAlignment="Center"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   Text="{Binding PairLabel}"
+                   ToolTip="Active source and target language (change in Settings)" />
+
+        <Button Content="Browse…"
+                Style="{StaticResource ActionButton}"
+                Command="{Binding BrowseCommand}"
+                ToolTip="Pick source files to transpile" />
+
+        <Button Content="Transpile"
+                Style="{StaticResource ActionButton}"
+                FontWeight="SemiBold"
+                Command="{Binding TranspileCommand}"
+                ToolTip="Transpile every file in the list; output is written next to each source file" />
+
+        <Button Content="Settings…"
+                Style="{StaticResource ActionButton}"
+                Command="{Binding OpenSettingsCommand}"
+                ToolTip="Configure languages folder, source and target language, backups and verbosity" />
+
+        <Button Content="Editor…"
+                Style="{StaticResource ActionButton}"
+                Command="{Binding OpenEditorCommand}"
+                ToolTip="Live editor: CLX on the left, syntax checking, CL preview on the right" />
+
+        <Button Content="IDE…"
+                Style="{StaticResource ActionButton}"
+                Command="{Binding OpenIdeCommand}"
+                ToolTip="File-explorer IDE: browse a folder and edit .cl / .clx files with a live problems console" />
+
+        <Button Content="Clear list"
+                Style="{StaticResource ActionButton}"
+                Command="{Binding ClearFilesCommand}" />
+
+        <ProgressBar Height="6"
+                     Margin="0,4,0,0"
+                     IsIndeterminate="True"
+                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+      </StackPanel>
+    </Grid>
+
+    <GridSplitter Grid.Row="1"
+                  Height="6"
+                  Margin="0,6"
+                  HorizontalAlignment="Stretch"
+                  Background="Transparent"
+                  ShowsPreview="True" />
+
+    <!-- Console box -->
+    <Grid Grid.Row="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <DockPanel Grid.Row="0" Margin="0,0,0,4">
+        <Button DockPanel.Dock="Right"
+                Padding="8,2"
+                Content="Clear"
+                Command="{Binding ClearConsoleCommand}" />
+        <TextBlock FontWeight="SemiBold" Text="Console" />
+      </DockPanel>
+
+      <ListBox x:Name="ConsoleList"
+               Grid.Row="1"
+               ItemsSource="{Binding ConsoleEntries}"
+               FontFamily="Consolas"
+               FontSize="12"
+               ScrollViewer.HorizontalScrollBarVisibility="Auto"
+               Background="#FF1E1E1E"
+               Foreground="#FFDCDCDC">
+        <ListBox.ItemContainerStyle>
+          <Style TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="4,1" />
+          </Style>
+        </ListBox.ItemContainerStyle>
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Display}">
+              <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding Level}" Value="Warning">
+                      <Setter Property="Foreground" Value="#FFFFC66D" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Level}" Value="Error">
+                      <Setter Property="Foreground" Value="#FFFF6B68" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Level}" Value="Fatal">
+                      <Setter Property="Foreground" Value="#FFFF4090" />
+                      <Setter Property="FontWeight" Value="SemiBold" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Level}" Value="Debug">
+                      <Setter Property="Foreground" Value="#FF808080" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Level}" Value="Verbose">
+                      <Setter Property="Foreground" Value="#FF606060" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </TextBlock.Style>
+            </TextBlock>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
+  </Grid>
+</Window>

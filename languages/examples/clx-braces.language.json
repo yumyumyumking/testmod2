@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 2,
+  "kind": "language",
+  "isEnabled": false,
+  "name": "CLX",
+  "displayName": "CLX (C#-style braces) \u2014 example, disabled",
+  "caseSensitive": false,
+  "comment": {
+    "line": "--"
+  },
+  "blocks": {
+    "style": "Braces",
+    "open": "{",
+    "close": "}"
+  },
+  "breakpoint": "",
+  "recipe": {
+    "namespace": {
+      "start": "SEQUENCE",
+      "mustContain": [
+        "mainroutine"
+      ],
+      "canContain": [
+        "variabledeclaration"
+      ]
+    },
+    "mainroutine": {
+      "start": "PHASE",
+      "canContain": [
+        "variabledeclaration",
+        "subroutine"
+      ]
+    },
+    "subroutine": {
+      "start": "STEP",
+      "end": "END",
+      "endEmit": "END {name}"
+    },
+    "variabledeclaration": {}
+  },
+  "variables": {
+    "scopes": {
+      "external": {
+        "keyword": "EXTERNAL"
+      },
+      "local": {
+        "keyword": "LOCAL",
+        "binding": "optional"
+      }
+    },
+    "kinds": {
+      "numeric": {
+        "spelling": "NUMBER",
+        "point": "NN"
+      },
+      "boolean": {
+        "spelling": "LOGICAL",
+        "point": "FL"
+      }
+    }
+  },
+  "keywords": {
+    "if": "IF",
+    "then": "THEN",
+    "else": "ELSE",
+    "elseIf": "ELSIF",
+    "endIf": "ENDIF",
+    "while": "WHILE",
+    "do": "DO",
+    "endWhile": "ENDWHILE",
+    "repeat": "REPEAT",
+    "times": "TIMES",
+    "endRepeat": "ENDREPEAT",
+    "try": "TRY",
+    "catch": "CATCH",
+    "endTry": "ENDTRY",
+    "array": "ARRAY",
+    "set": "SET",
+    "reset": "RESET",
+    "goto": "GOTO",
+    "call": "CALL",
+    "return": "RETURN",
+    "boolTrue": "ON",
+    "boolFalse": "OFF",
+    "and": "AND",
+    "or": "OR",
+    "not": "NOT"
+  },
+  "labels": {
+    "suffix": ":",
+    "generatedPrefix": "__CLX_"
+  },
+  "capabilities": {
+    "blockIf": true,
+    "complexConditions": true,
+    "arithmetic": true,
+    "returnInMain": "endScan",
+    "localCapacity": 1000
+  }
+}

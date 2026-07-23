@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "kind": "language",
+  "isEnabled": true,
+  "name": "CL",
+  "displayName": "Generic CL (SEQUENCE/PHASE/STEP)",
+  "caseSensitive": false,
+  "comment": {
+    "line": "--"
+  },
+  "blocks": {
+    "style": "Keyword",
+    "open": "{",
+    "close": "}"
+  },
+  "breakpoint": "",
+  "recipe": {
+    "namespace": {
+      "format": "SEQUENCE {name} ({hardware}; POINT {database})",
+      "defaults": {
+        "hardware": "GENERIC",
+        "database": "DB"
+      },
+      "mustContain": [
+        "mainroutine"
+      ],
+      "canContain": [
+        "variabledeclaration"
+      ]
+    },
+    "mainroutine": {
+      "start": "PHASE",
+      "end": "ENDPHASE",
+      "endEmit": "ENDPHASE {name}",
+      "endOptional": true,
+      "canContain": [
+        "variabledeclaration",
+        "subroutine"
+      ]
+    },
+    "subroutine": {
+      "start": "STEP",
+      "end": "END",
+      "endEmit": "END {name}"
+    },
+    "variabledeclaration": {}
+  },
+  "variables": {
+    "scopes": {
+      "external": {
+        "keyword": "EXTERNAL"
+      },
+      "local": {
+        "keyword": "LOCAL",
+        "binding": "optional"
+      }
+    },
+    "kinds": {
+      "numeric": {
+        "spelling": "NUMBER",
+        "point": "NN"
+      },
+      "boolean": {
+        "spelling": "LOGICAL",
+        "point": "FL"
+      }
+    }
+  },
+  "mappings": {
+    "trycatch": {
+      "selector": "TryBlock",
+      "lowering": {
+        "begin": "GUARD_BEGIN",
+        "middle": "GUARD_ONFAULT {faultVar}",
+        "end": "GUARD_END"
+      },
+      "lifting": {
+        "begin": "GUARD_BEGIN",
+        "middle": "GUARD_ONFAULT {faultVar:identifier}",
+        "end": "GUARD_END"
+      }
+    },
+    "array-alloc": {
+      "selector": "ArrayDeclaration",
+      "lowering": {
+        "format": "ALLOC {name} SIZE {size}"
+      },
+      "lifting": {
+        "pattern": "ALLOC {name:identifier} SIZE {size:number}"
+      }
+    },
+    "array-store": {
+      "selector": "IndexedStore",
+      "lowering": {
+        "format": "STORE {array} IDX {index} VAL {value}"
+      },
+      "lifting": {
+        "pattern": "STORE {array:identifier} IDX {index:expression} VAL {value:expression}"
+      }
+    },
+    "array-load": {
+      "selector": "IndexedLoad",
+      "lowering": {
+        "format": "LOAD {dest} FROM {array} IDX {index}"
+      },
+      "lifting": {
+        "pattern": "LOAD {dest:identifier} FROM {array:identifier} IDX {index:expression}"
+      }
+    }
+  },
+  "keywords": {
+    "if": "IF",
+    "then": "THEN",
+    "else": "ELSE",
+    "set": "SET",
+    "reset": "RESET",
+    "goto": "GOTO",
+    "call": "CALL",
+    "return": "RETURN",
+    "boolTrue": "ON",
+    "boolFalse": "OFF",
+    "and": "AND",
+    "or": "OR",
+    "not": "NOT"
+  },
+  "labels": {
+    "suffix": ":",
+    "generatedPrefix": "__CLX_"
+  },
+  "capabilities": {
+    "blockIf": false,
+    "complexConditions": true,
+    "arithmetic": true,
+    "returnInMain": "endScan",
+    "pointAllocation": true,
+    "allocationField": "database",
+    "localCapacity": 1000
+  }
+}

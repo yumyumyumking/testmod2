@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 2,
+  "kind": "language",
+  "isEnabled": true,
+  "name": "MATLAB",
+  "displayName": "MATLAB (structured front end for CL)",
+  "caseSensitive": false,
+  "comment": {
+    "line": "%"
+  },
+  "blocks": {
+    "style": "Keyword"
+  },
+  "breakpoint": ";,",
+  "recipe": {
+    "variabledeclaration": {},
+    "subroutine": {
+      "start": "function",
+      "end": "end",
+      "endEmit": "end"
+    }
+  },
+  "variables": {
+    "scopes": {
+      "external": {
+        "keyword": "global"
+      },
+      "locallyscoped": {
+        "keyword": "persistent"
+      }
+    },
+    "kinds": {}
+  },
+  "keywords": {
+    "if": "if",
+    "then": "then",
+    "else": "else",
+    "elseIf": "elseif",
+    "endIf": "end",
+    "while": "while",
+    "do": "do",
+    "endWhile": "end",
+    "for": "for",
+    "endFor": "end",
+    "try": "try",
+    "catch": "catch",
+    "endTry": "end",
+    "return": "return",
+    "boolTrue": "true",
+    "boolFalse": "false",
+    "and": "&&",
+    "or": "||",
+    "not": "~",
+    "equal": "==",
+    "notEqual": "~="
+  },
+  "labels": {
+    "suffix": ":",
+    "generatedPrefix": "__CLX_"
+  },
+  "capabilities": {
+    "blockIf": true,
+    "complexConditions": true,
+    "arithmetic": true,
+    "returnInMain": "endScan",
+    "pointAllocation": false,
+    "localCapacity": 1000,
+    "requiresThen": false,
+    "requiresDo": false,
+    "catchWithParens": false,
+    "setReset": false,
+    "forLoops": true,
+    "implicitCall": true
+  }
+}

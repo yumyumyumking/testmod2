@@ -1,0 +1,46 @@
+-- Pump protection, CLX source
+SEQUENCE PumpProtect (PM; POINT PumpDb)
+
+EXTERNAL Temp
+EXTERNAL Limit
+EXTERNAL Warn
+EXTERNAL Alarm : LOGICAL
+EXTERNAL WarnLamp : LOGICAL
+EXTERNAL FanCmd : LOGICAL
+EXTERNAL FaultLamp : LOGICAL
+LOCAL Attempts : NUMBER
+LOCAL Latched : LOGICAL
+
+PHASE Protect
+STEP Monitor
+  Attempts = 0
+  ARRAY history[8]
+  history[0] = Temp
+
+  WHILE Temp > Limit DO
+    SET Alarm
+    Attempts = Attempts + 1
+  ENDWHILE
+
+  IF Temp > Warn THEN
+    SET WarnLamp
+  ELSIF Attempts > 3 THEN
+    SET WarnLamp
+    SET Latched
+  ELSE
+    RESET WarnLamp
+  ENDIF
+
+  RESET Alarm
+END Monitor
+
+STEP Cooldown
+  TRY
+    SET FanCmd
+    REPEAT 5 TIMES
+      SET FanCmd
+    ENDREPEAT
+  CATCH (fault)
+    SET FaultLamp
+  ENDTRY
+END Cooldown

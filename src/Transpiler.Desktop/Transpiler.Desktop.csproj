@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Transpiler.Desktop</RootNamespace>
+    <AssemblyName>Transpiler.Desktop</AssemblyName>
+    <!-- Allows the WPF project to compile on non-Windows build agents. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- Use the hand-written Program.Main (which builds the host) instead of the
+         auto-generated WPF entry point. -->
+    <StartupObject>Transpiler.Desktop.Program</StartupObject>
+  </PropertyGroup>
+
+  <!-- Compile App.xaml as a Page so no Main is generated; Program.cs owns the entry point. -->
+  <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Transpiler.Core\Transpiler.Core.csproj" />
+    <ProjectReference Include="..\Transpiler.Engine\Transpiler.Engine.csproj" />
+    <ProjectReference Include="..\Transpiler.Infrastructure\Transpiler.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <!-- Core model + Engine API + Infrastructure adapters visible to the view models
+       without per-file usings. -->
+  <ItemGroup>
+    <Using Include="Transpiler.Core.Abstractions" />
+    <Using Include="Transpiler.Core.Text" />
+    <Using Include="Transpiler.Core.Syntax" />
+    <Using Include="Transpiler.Core.Diagnostics" />
+    <Using Include="Transpiler.Core.Languages" />
+    <Using Include="Transpiler.Core.Configuration" />
+    <Using Include="Transpiler.Core.Semantics" />
+    <Using Include="Transpiler.Engine" />
+    <Using Include="Transpiler.Engine.Syntax" />
+    <Using Include="Transpiler.Engine.Languages" />
+    <Using Include="Transpiler.Engine.Emit" />
+    <Using Include="Transpiler.Engine.Rules" />
+    <Using Include="Transpiler.Engine.Transform" />
+    <Using Include="Transpiler.Engine.Abstractions" />
+    <Using Include="Transpiler.Infrastructure" />
+    <Using Include="Transpiler.Infrastructure.Languages" />
+    <Using Include="Transpiler.Infrastructure.Configuration" />
+  </ItemGroup>
+
+  <!-- Ship the language files next to the executable so the defaults just work. -->
+  <ItemGroup>
+    <None Include="..\..\languages\**\*.json" LinkBase="languages" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

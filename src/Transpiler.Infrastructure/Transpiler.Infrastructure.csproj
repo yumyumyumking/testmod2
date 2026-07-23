@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Transpiler.Infrastructure</RootNamespace>
+    <AssemblyName>Transpiler.Infrastructure</AssemblyName>
+    <Description>The outer I/O ring of the transpiler onion: everything that touches the file system — the language loader, settings persistence, batch file transpilation. Depends inward on Transpiler.Engine and Transpiler.Core; nothing inward depends on it.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Transpiler.Core\Transpiler.Core.csproj" />
+    <ProjectReference Include="..\Transpiler.Engine\Transpiler.Engine.csproj" />
+  </ItemGroup>
+
+  <!-- Global usings: the Core model, the Engine API, and this project's own
+       namespaces are visible across the assembly without per-file using churn. -->
+  <ItemGroup>
+    <Using Include="Transpiler.Core.Text" />
+    <Using Include="Transpiler.Core.Syntax" />
+    <Using Include="Transpiler.Core.Diagnostics" />
+    <Using Include="Transpiler.Core.Languages" />
+    <Using Include="Transpiler.Core.Abstractions" />
+    <Using Include="Transpiler.Core.Configuration" />
+    <Using Include="Transpiler.Core.Semantics" />
+    <Using Include="Transpiler.Engine" />
+    <Using Include="Transpiler.Engine.Syntax" />
+    <Using Include="Transpiler.Engine.Rules" />
+    <Using Include="Transpiler.Infrastructure" />
+    <Using Include="Transpiler.Infrastructure.Languages" />
+    <Using Include="Transpiler.Infrastructure.Configuration" />
+  </ItemGroup>
+
+</Project>
