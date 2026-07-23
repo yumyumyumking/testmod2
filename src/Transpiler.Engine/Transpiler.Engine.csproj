@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Transpiler.Engine</RootNamespace>
+    <AssemblyName>Transpiler.Engine</AssemblyName>
+    <Description>The transpiler engine (application layer): lexer, parser, binder, transform passes, emitter, verification and pipeline orchestration — pure behavior over Transpiler.Core's model. File-system loaders live one ring out, in Transpiler.Infrastructure.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Transpiler.Core\Transpiler.Core.csproj" />
+  </ItemGroup>
+
+  <!-- Global usings: the Core model and the Engine's own sub-namespaces are visible
+       across the assembly, so the data/behavior split needs no per-file using edits. -->
+  <ItemGroup>
+    <Using Include="Transpiler.Core.Abstractions" />
+    <Using Include="Transpiler.Core.Text" />
+    <Using Include="Transpiler.Core.Syntax" />
+    <Using Include="Transpiler.Core.Diagnostics" />
+    <Using Include="Transpiler.Core.Languages" />
+    <Using Include="Transpiler.Core.Configuration" />
+    <Using Include="Transpiler.Core.Semantics" />
+    <Using Include="Transpiler.Engine" />
+    <Using Include="Transpiler.Engine.Abstractions" />
+    <Using Include="Transpiler.Engine.Syntax" />
+    <Using Include="Transpiler.Engine.Semantics" />
+    <Using Include="Transpiler.Engine.Languages" />
+    <Using Include="Transpiler.Engine.Emit" />
+    <Using Include="Transpiler.Engine.Transform" />
+    <Using Include="Transpiler.Engine.Transform.Lifting" />
+    <Using Include="Transpiler.Engine.Transform.Lowering" />
+    <Using Include="Transpiler.Engine.Rules" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Transpiler.Core.Tests" />
+  </ItemGroup>
+
+</Project>
